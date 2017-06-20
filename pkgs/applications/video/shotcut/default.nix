@@ -48,6 +48,6 @@ stdenv.mkDerivation rec {
 
     # after qt5 bump it probably needs to be updated,
     # but newer versions seem to need newer than the latest stable mlt
-    # broken = true;
+    broken = true;
   };
 }

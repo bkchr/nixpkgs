@@ -1,20 +1,21 @@
 { stdenv, fetchurl, cmake, makeQtWrapper, exiv2, graphicsmagick
 , qtbase, qtdeclarative, qtmultimedia, qtquickcontrols, qttools
+, libraw
 }:
 
 let
-  version = "1.3";
+  version = "1.5.1";
 in
 stdenv.mkDerivation rec {
   name = "photoqt-${version}";
   src = fetchurl {
     url = "http://photoqt.org/pkgs/photoqt-${version}.tar.gz";
-    sha256 = "0j2kvxfb5pd9abciv161nkcsyam6n8kfqs8ymwj2mxiqflwbmfl1";
+    sha256 = "61018feba7e3e0b82b0bc845cab4740ea3e26339cd4b69847ed1ba5fe7bf739e";
   };
 
   buildInputs = [
     cmake makeQtWrapper qtbase qtquickcontrols qttools exiv2 graphicsmagick
-    qtmultimedia qtdeclarative
+    qtmultimedia qtdeclarative libraw
   ];
 
   preConfigure = ''
@@ -24,6 +25,8 @@ stdenv.mkDerivation rec {
   postInstall = ''
     wrapQtProgram $out/bin/photoqt
   '';
+
+  patches = [ ./cmake-find-qt.patch ];
 
   meta = {
     homepage = "http://photoqt.org/";

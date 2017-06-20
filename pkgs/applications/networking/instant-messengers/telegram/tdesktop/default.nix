@@ -6,13 +6,13 @@
 
 stdenv.mkDerivation rec {
   name = "telegram-desktop-${version}";
-  version = "1.0.27";
+  version = "1.1.7";
 
   # Submodules
   src = fetchgit {
     url = "https://github.com/telegramdesktop/tdesktop";
     rev = "refs/tags/v${version}";
-    sha256 = "05g88g6h2a7f9biliicg81fqssx0y3akd3y5r2q2b5h8q3igqrfc";
+    sha256 = "c63ebbd7e437822774192c7d4d4f4ce2c42c918128aa863b56232ad3588fdbbd";
   };
 
   tgaur = fetchgit {

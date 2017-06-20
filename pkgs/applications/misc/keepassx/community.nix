@@ -20,6 +20,8 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ cmake libgcrypt zlib qtbase qttools libXtst libmicrohttpd libgpgerror ];
 
+  patches = [ ./community-qt59.patch ];
+
   meta = {
     description = "Fork of the keepassX password-manager with additional http-interface to allow browser-integration an use with plugins such as PasslFox (https://github.com/pfn/passifox). See also keepassX2.";
     homepage = https://github.com/keepassxreboot/keepassxc;

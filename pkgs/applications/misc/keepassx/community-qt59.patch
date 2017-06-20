@@ -1,0 +1,13 @@
+diff --git a/tests/modeltest.cpp b/tests/modeltest.cpp
+index 360a7be..0792e4f 100644
+--- a/tests/modeltest.cpp
++++ b/tests/modeltest.cpp
+@@ -448,7 +448,7 @@ void ModelTest::data()
+     QVariant textAlignmentVariant = model->data ( model->index ( 0, 0 ), Qt::TextAlignmentRole );
+     if ( textAlignmentVariant.isValid() ) {
+         int alignment = textAlignmentVariant.toInt();
+-        QCOMPARE( alignment, ( alignment & ( Qt::AlignHorizontal_Mask | Qt::AlignVertical_Mask ) ) );
++        QCOMPARE( alignment, static_cast<int>( alignment & ( Qt::AlignHorizontal_Mask | Qt::AlignVertical_Mask ) ) );
+     }
+ 
+     // General Purpose roles that should return a QColor
