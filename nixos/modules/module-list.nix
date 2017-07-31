@@ -88,6 +88,7 @@
   ./programs/info.nix
   ./programs/java.nix
   ./programs/kbdlight.nix
+  ./programs/kdeconnect.nix
   ./programs/light.nix
   ./programs/man.nix
   ./programs/mosh.nix

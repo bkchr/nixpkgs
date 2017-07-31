@@ -12,6 +12,8 @@
 , libfakekey
 , libXtst
 , qtx11extras
+, sshfs-fuse
+, makeWrapper
 }:
 
 stdenv.mkDerivation rec {
@@ -35,9 +37,14 @@ stdenv.mkDerivation rec {
     libfakekey
     libXtst
     qtx11extras
+    makeWrapper
   ];
 
   nativeBuildInputs = [ extra-cmake-modules ];
+
+  postInstall = ''
+    wrapProgram $out/lib/libexec/kdeconnectd --prefix PATH : ${lib.makeBinPath [ sshfs-fuse ]}
+  '';
 
   meta = {
     description = "KDE Connect provides several features to integrate your phone and your computer";
