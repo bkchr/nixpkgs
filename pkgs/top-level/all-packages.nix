@@ -18230,7 +18230,7 @@ with pkgs;
     kactivitymanagerd kde-cli-tools kde-gtk-config kdeplasma-addons kgamma5
     kinfocenter kmenuedit kscreen kscreenlocker ksshaskpass ksysguard
     kwallet-pam kwayland-integration kwin kwrited milou oxygen plasma-desktop
-    plasma-integration plasma-nm plasma-pa plasma-workspace
+    plasma-integration plasma-nm plasma-pa plasma-vault plasma-workspace
     plasma-workspace-wallpapers polkit-kde-agent powerdevil startkde
     systemsettings;
 
