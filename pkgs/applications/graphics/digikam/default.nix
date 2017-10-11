@@ -33,7 +33,7 @@
 , libusb1
 , marble
 , mysql
-, opencv
+, opencv3
 , threadweaver
 
 # For panorama and focus stacking
@@ -46,16 +46,14 @@
 
 mkDerivation rec {
   name    = "digikam-${version}";
-  version = "5.4.0";
+  version = "5.7.0";
 
   src = fetchurl {
     url = "http://download.kde.org/stable/digikam/${name}.tar.xz";
-    sha256 = "0dgsgji14l5zvxny36hrfsp889fsfrsbbn9bg57m18404xp903kg";
+    sha256 = "1xah079g47fih8l9qy1ifppfvmq5yms5y1z54nvxdyz8nsszy19n";
   };
 
   nativeBuildInputs = [ cmake extra-cmake-modules kdoctools wrapGAppsHook ];
-
-  patches = [ ./0001-Disable-fno-operator-names.patch ];
 
   buildInputs = [
     bison
@@ -72,7 +70,7 @@ mkDerivation rec {
     libqtav
     libusb1
     mysql
-    opencv
+    opencv3
   ];
 
   propagatedBuildInputs = [
