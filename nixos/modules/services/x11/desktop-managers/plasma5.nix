@@ -136,6 +136,7 @@ in
           konsole
           oxygen
           print-manager
+          plasma-vault
 
           breeze-icons
           pkgs.hicolor_icon_theme
