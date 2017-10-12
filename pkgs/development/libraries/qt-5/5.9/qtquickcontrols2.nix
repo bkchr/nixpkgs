@@ -7,4 +7,5 @@ qtSubmodule {
   postInstall = ''
     moveToOutput "$qtQmlPrefix" "$bin"
   '';
+  separateDebugInfo = true;
 }

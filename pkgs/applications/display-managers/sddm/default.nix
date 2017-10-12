@@ -52,6 +52,8 @@ in mkDerivation rec {
     rm "$out/share/sddm/scripts/Xsetup" "$out/share/sddm/scripts/Xstop"
   '';
 
+  separateDebugInfo = true;
+
   meta = with lib; {
     description = "QML based X11 display manager";
     homepage = https://github.com/sddm/sddm;

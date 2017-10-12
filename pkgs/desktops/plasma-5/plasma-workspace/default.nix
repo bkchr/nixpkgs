@@ -37,6 +37,8 @@ mkDerivation {
     substituteInPlace startkde/kstartupconfig/kstartupconfig.cpp \
         --replace kdostartupconfig5 ''${!outputBin}/bin/kdostartupconfig5
   '';
+  
+  separateDebugInfo = true;
 
   postInstall = ''
     rm "''${!outputBin}/bin/startkde"

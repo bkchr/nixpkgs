@@ -350,6 +350,8 @@ stdenv.mkDerivation {
               then ../../qtbase-setup-hook-darwin.sh
               else ../../qtbase-setup-hook.sh;
 
+  separateDebugInfo = true;
+
   meta = with lib; {
     homepage = http://www.qt.io;
     description = "A cross-platform application framework for C++";

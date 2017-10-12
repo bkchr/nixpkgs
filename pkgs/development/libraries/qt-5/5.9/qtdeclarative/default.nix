@@ -17,4 +17,5 @@ qtSubmodule {
     moveToOutput "$qtPluginPrefix" "$bin"
     moveToOutput "$qtQmlPrefix" "$bin"
   '';
+  separateDebugInfo = true;
 }
