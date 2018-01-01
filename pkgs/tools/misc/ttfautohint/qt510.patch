@@ -1,0 +1,11 @@
+--- a/configure	2017-12-29 01:10:59.201970193 +0100
++++ b/configure	2017-12-29 01:10:40.161330131 +0100
+@@ -20163,7 +20163,7 @@
+   echo "$as_me:$LINENO: Running $QMAKE --version:" \
+           >& 5
+         $QMAKE --version >& 5 2>&1
+-        qmake_version_sed='/^.*\([0-9]\.[0-9]\.[0-9]\).*$/!d;s//\1/'
++        qmake_version_sed='/^.*\([0-9]\.[0-9]\{1,2\}\.[0-9]\).*$/!d;s//\1/'
+         at_cv_QT_VERSION=`$QMAKE --version 2>&1 \
+                           | sed "$qmake_version_sed"`
+ fi

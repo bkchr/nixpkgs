@@ -17,9 +17,11 @@ stdenv.mkDerivation rec {
 
   buildInputs = [ freetype harfbuzz libiconv ] ++ lib.optional enableGUI qtbase;
 
-  configureFlags = lib.optional (!enableGUI) "--with-qt=no";
+  configureFlags = (if enableGUI then "--with-qt=${qtbase}/lib"  else "--with-qt=no");
 
   enableParallelBuilding = true;
+
+  patches = [ ./qt510.patch ];
 
   meta = with stdenv.lib; {
     description = "An automatic hinter for TrueType fonts";
