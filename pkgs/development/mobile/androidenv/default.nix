@@ -44,8 +44,8 @@ rec {
   };
 
   androidsdk = import ./androidsdk.nix {
-    inherit (pkgs) stdenv fetchurl unzip makeWrapper;
-    inherit (pkgs) zlib glxinfo freetype fontconfig glib gtk2 atk mesa file alsaLib jdk coreutils libpulseaudio dbus;
+    inherit (pkgs) stdenv fetchurl unzip makeWrapper strace;
+    inherit (pkgs) zlib glxinfo freetype fontconfig glib gtk2 atk mesa file alsaLib jdk coreutils libpulseaudio dbus openjdk;
     inherit (pkgs.xorg) libX11 libXext libXrender libxcb libXau libXdmcp libXtst xkeyboardconfig;
     
     inherit platformTools buildTools support supportRepository platforms sysimages addons sources includeSources;

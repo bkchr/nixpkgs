@@ -2,7 +2,7 @@
 , platformTools, buildTools, support, supportRepository, platforms, sysimages, addons, sources
 , libX11, libXext, libXrender, libxcb, libXau, libXdmcp, libXtst, mesa, alsaLib
 , freetype, fontconfig, glib, gtk2, atk, file, jdk, coreutils, libpulseaudio, dbus
-, zlib, glxinfo, xkeyboardconfig
+, zlib, glxinfo, xkeyboardconfig, openjdk, strace
 , includeSources
 }:
 { platformVersions, abiVersions, useGoogleAPIs, useExtraSupportLibs ? false
@@ -12,16 +12,18 @@ let inherit (stdenv.lib) makeLibraryPath; in
 
 stdenv.mkDerivation rec {
   name = "android-sdk-${version}";
-  version = "25.2.5";
+  version = "26.1.1";
+
+  nativeBuildInputs = [ openjdk strace ];
 
   src = if (stdenv.system == "i686-linux" || stdenv.system == "x86_64-linux")
     then fetchurl {
-      url = "http://dl.google.com/android/repository/tools_r${version}-linux.zip";
-      sha256 = "0gnk49pkwy4m0nqwm1xnf3w4mfpi9w0kk7841xlawpwbkj0icxap";
+      url = "https://dl.google.com/android/repository/sdk-tools-linux-4333796.zip";
+      sha256 = "1yfy0qqxz1ixpsci1pizls1nrncmi8p16wcb9rimdn4q3mdfxzwj";
     }
     else if stdenv.system == "x86_64-darwin" then fetchurl {
-      url = "http://dl.google.com/android/repository/tools_r${version}-macosx.zip";
-      sha256 = "0yg7wjmyw70xsh8k4hgbqb5rilam2a94yc8dwbh7fjwqcmpxgwqb";
+      url = "https://dl.google.com/android/repository/sdk-tools-darwin-4333796.zip";
+      sha256 = "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855";
     }
     else throw "platform not ${stdenv.system} supported!";
 
@@ -31,9 +33,9 @@ stdenv.mkDerivation rec {
     unpackFile $src
     cd tools
 
-    for f in android traceview draw9patch hierarchyviewer monitor ddms screenshot2 uiautomatorviewer monkeyrunner jobb lint
+    for f in android monitor bin/uiautomatorviewer bin/monkeyrunner
     do
-        sed -i -e "s|/bin/ls|${coreutils}/bin/ls|" "$f"
+        sed -i -e "s|/bin/ls|${coreutils}/bin/ls|" $f
     done
 
     ${stdenv.lib.optionalString (stdenv.system == "i686-linux" || stdenv.system == "x86_64-linux")
@@ -47,17 +49,9 @@ stdenv.mkDerivation rec {
       done
 
       ${stdenv.lib.optionalString (stdenv.system == "x86_64-linux") ''
-        for i in bin64/{mkfs.ext4,fsck.ext4,e2fsck,tune2fs,resize2fs}
-        do
-            patchelf --set-interpreter ${stdenv.cc.libc.out}/lib/ld-linux-x86-64.so.2 $i
-            patchelf --set-rpath ${stdenv.cc.cc.lib}/lib64 $i
-        done
-      ''}
-
-      ${stdenv.lib.optionalString (stdenv.system == "x86_64-linux") ''
         # We must also patch the 64-bit emulator instances, if needed
 
-        for i in emulator emulator64-arm emulator64-mips emulator64-x86 emulator64-crash-service emulator-check qemu/linux-x86_64/qemu-system-*
+        for i in emulator emulator-check qemu/linux-x86_64/qemu-system-*
         do
             patchelf --set-interpreter ${stdenv.cc.libc.out}/lib/ld-linux-x86-64.so.2 $i
             patchelf --set-rpath ${stdenv.cc.cc.lib}/lib64 $i
@@ -71,18 +65,14 @@ stdenv.mkDerivation rec {
         --prefix PATH : ${jdk}/bin \
         --prefix LD_LIBRARY_PATH : ${makeLibraryPath [ glib gtk2 libXtst ]}
 
-      wrapProgram `pwd`/uiautomatorviewer \
-        --prefix PATH : ${jdk}/bin \
-        --prefix LD_LIBRARY_PATH : ${stdenv.lib.makeLibraryPath [ glib gtk2 libXtst ]}
-
-      wrapProgram `pwd`/hierarchyviewer \
+      wrapProgram `pwd`/bin/uiautomatorviewer \
         --prefix PATH : ${jdk}/bin \
         --prefix LD_LIBRARY_PATH : ${stdenv.lib.makeLibraryPath [ glib gtk2 libXtst ]}
 
       # The emulators need additional libraries, which are dynamically loaded => let's wrap them
 
       ${stdenv.lib.optionalString (stdenv.system == "x86_64-linux") ''
-        for i in emulator emulator64-arm emulator64-mips emulator64-x86 emulator64-crash-service
+        for i in emulator emulator-check
         do
             wrapProgram `pwd`/$i \
               --prefix PATH : ${stdenv.lib.makeBinPath [ file glxinfo ]} \
@@ -250,6 +240,19 @@ stdenv.mkDerivation rec {
             ln -sf $i $out/bin/$(basename $i)
         fi
     done
+
+    export ANDROID_HOME=$out/libexec
+    export ANDROID_SDK_HOME=$out/libexec
+    export TMP=`pwd`
+echo $ANDROID_SDK_HOME
+    cd $out/libexec
+mkdir -p .android
+chmod 777 .android
+echo "count=0" > .android/repositories.cfg
+tar -xf ${./cache.tar} -C .android/
+     yes | strace -f -e trace=file -- $out/libexec/tools/bin/sdkmanager --licenses || echo $?
+     echo $?
+     ls $out/libexec
   '';
 
   buildInputs = [ unzip makeWrapper ];
