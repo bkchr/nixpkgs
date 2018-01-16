@@ -1,7 +1,8 @@
 { stdenv, targetPackages
 , fetchurl, fetchgit, fetchzip, file, python2, tzdata, procps
 , llvm, jemalloc, ncurses, darwin, rustPlatform, git, cmake, curl
-, which, libffi, gdb
+, which, libffi, gdb, pkgconfig, openssl, zlib, python
+, makeWrapper, libiconv, cacert, libgit2
 , version
 , forceBundledLLVM ? false
 , src
@@ -17,7 +18,7 @@
 
 let
   inherit (stdenv.lib) optional optionalString;
-  inherit (darwin.apple_sdk.frameworks) Security;
+  inherit (darwin.apple_sdk.frameworks) Security CoreFoundation;
 
   procps = if stdenv.isDarwin then darwin.ps else args.procps;
 
@@ -53,7 +54,7 @@ stdenv.mkDerivation {
                 ++ [ "--enable-local-rust" "--local-rust-root=${rustPlatform.rust.rustc}" "--enable-rpath" ]
                 ++ [ "--enable-vendor" "--disable-locked-deps" ]
                 # ++ [ "--jemalloc-root=${jemalloc}/lib"
-                ++ [ "--default-linker=${targetPackages.stdenv.cc}/bin/cc" "--default-ar=${targetPackages.stdenv.cc.bintools}/bin/ar" ]
+                ++ [ "--default-linker=${targetPackages.stdenv.cc}/bin/cc" ]
                 ++ optional (!forceBundledLLVM) [ "--enable-llvm-link-shared" ]
                 ++ optional (targets != []) "--target=${target}"
                 ++ optional (!forceBundledLLVM) "--llvm-root=${llvmShared}";
@@ -90,20 +91,7 @@ stdenv.mkDerivation {
 
     # On Hydra: `TcpListener::bind(&addr)`: Address already in use (os error 98)'
     sed '/^ *fn fast_rebind()/i#[ignore]' -i src/libstd/net/tcp.rs
-
-    # Disable some failing gdb tests. Try re-enabling these when gdb
-    # is updated past version 7.12.
-    rm src/test/debuginfo/basic-types-globals.rs
-    rm src/test/debuginfo/basic-types-mut-globals.rs
-    rm src/test/debuginfo/c-style-enum.rs
-    rm src/test/debuginfo/lexical-scopes-in-block-expression.rs
-    rm src/test/debuginfo/limited-debuginfo.rs
-    rm src/test/debuginfo/simple-struct.rs
-    rm src/test/debuginfo/simple-tuple.rs
-    rm src/test/debuginfo/union-smoke.rs
-    rm src/test/debuginfo/vec-slices.rs
-    rm src/test/debuginfo/vec.rs
-
+  
     # Useful debugging parameter
     # export VERBOSE=1
   ''
@@ -132,14 +120,29 @@ stdenv.mkDerivation {
   # ps is needed for one of the test cases
   nativeBuildInputs =
     [ file python2 procps rustPlatform.rust.rustc git cmake
-      which libffi
+      which libffi pkgconfig
     ]
     # Only needed for the debuginfo tests
     ++ optional (!stdenv.isDarwin) gdb;
 
-  buildInputs = [ ncurses ] ++ targetToolchains
-    ++ optional stdenv.isDarwin Security
+  buildInputs = 
+    [ 
+      ncurses file curl python openssl 
+      cmake zlib makeWrapper libgit2 
+    ] 
+    ++ targetToolchains
+    ++ optional stdenv.isDarwin [ CoreFoundation libiconv Security ]
     ++ optional (!forceBundledLLVM) llvmShared;
+
+  LIBGIT2_SYS_USE_PKG_CONFIG=1;
+
+  # Cargo
+  # FIXME: Use impure version of CoreFoundation because of missing symbols.
+  # CFURLSetResourcePropertyForKey is defined in the headers but there's no
+  # corresponding implementation in the sources from opensource.apple.com.
+  preConfigure = stdenv.lib.optionalString stdenv.isDarwin ''
+    export NIX_CFLAGS_COMPILE="-F${CoreFoundation}/Library/Frameworks $NIX_CFLAGS_COMPILE"
+  '';
 
   outputs = [ "out" "man" "doc" ];
   setOutputFlags = false;
@@ -160,6 +163,33 @@ stdenv.mkDerivation {
   inherit doCheck;
 
   configurePlatforms = [];
+
+  buildPhase = ''
+    make
+    ${python2}/bin/python ./x.py build cargo
+  '';
+  
+  installPhase = ''
+    make install
+
+    # Cargo will install the completions and other stuff to $DESTDIR
+    export DESTDIR=$(mktemp -d)
+    ${python2}/bin/python ./x.py install cargo
+
+    # Copy the completions
+    mkdir -p "$out/share/"{bash-completion/completions,zsh/site-functions}
+    cp $DESTDIR/etc/bash_completion.d/cargo $out/share/bash-completion/completions
+    cp $DESTDIR/$out/share/zsh/site-functions/_cargo $out/share/zsh/site-functions
+
+    # NOTE: We override the `http.cainfo` option usually specified in
+    # `.cargo/config`. This is an issue when users want to specify
+    # their own certificate chain as environment variables take
+    # precedence
+    wrapProgram "$out/bin/cargo" \
+      --suffix PATH : "$out/bin" \
+      --set CARGO_HTTP_CAINFO "${cacert}/etc/ssl/certs/ca-bundle.crt" \
+      --set SSL_CERT_FILE "${cacert}/etc/ssl/certs/ca-bundle.crt"
+  '';
 
   # https://github.com/NixOS/nixpkgs/pull/21742#issuecomment-272305764
   # https://github.com/rust-lang/rust/issues/30181
