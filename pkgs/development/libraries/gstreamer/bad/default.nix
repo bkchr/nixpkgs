@@ -1,4 +1,5 @@
-{ stdenv, fetchurl, pkgconfig, python, gst-plugins-base, orc
+{ stdenv, fetchurl, meson, ninja, pkgconfig, python
+, gst-plugins-base, orc
 , faacSupport ? false, faac ? null
 , gtkSupport ? false, gtk3 ? null
 , faad2, libass, libkate, libmms
@@ -42,9 +43,18 @@ stdenv.mkDerivation rec {
   #       old version of Apple SDK's.
   configureFlags = optional stdenv.isDarwin "--disable-cocoa";
 
-  patchPhase = ''
+  preConfigure = ''
+    patchShebangs .
+  '';
+
+  prePatch = ''
     sed -i 's/openjpeg-2.2/openjpeg-${openJpegVersion}/' ext/openjpeg/*
   '';
+
+  patches = [
+    ./fix_install_dir.patch
+    ./fix_pkgconfig_includedir.patch
+  ];
 
   src = fetchurl {
     url = "${meta.homepage}/src/gst-plugins-bad/${name}.tar.xz";
@@ -53,7 +63,7 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" ];
 
-  nativeBuildInputs = [ pkgconfig python ];
+  nativeBuildInputs = [ meson ninja pkgconfig python ];
 
   buildInputs = [
     gst-plugins-base orc
@@ -76,6 +86,4 @@ stdenv.mkDerivation rec {
     ++ optional (!stdenv.isDarwin) mjpegtools;
 
   LDFLAGS = optionalString stdenv.isDarwin "-lintl";
-
-  enableParallelBuilding = true;
 }

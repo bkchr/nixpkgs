@@ -1,0 +1,39 @@
+diff --git a/gst-libs/gst/interfaces/meson.build b/gst-libs/gst/interfaces/meson.build
+index 35290f731..45228ac4a 100644
+--- a/gst-libs/gst/interfaces/meson.build
++++ b/gst-libs/gst/interfaces/meson.build
+@@ -8,7 +8,7 @@ photoenum_h = custom_target('photoenum_h',
+   output : 'photography-enumtypes.h',
+   input : photo_headers,
+   install : true,
+-  install_dir : 'include/gstreamer-1.0/gst/interfaces',
++  install_dir : get_option('includedir') + '/gstreamer-1.0/gst/interfaces',
+   command : [mkenums, glib_mkenums, '@OUTPUT@', '@INPUT@'])
+ 
+ photoenum_c = custom_target('photoenum_c',
+diff --git a/gst-libs/gst/mpegts/meson.build b/gst-libs/gst/mpegts/meson.build
+index 2ee420926..19eb4356d 100644
+--- a/gst-libs/gst/mpegts/meson.build
++++ b/gst-libs/gst/mpegts/meson.build
+@@ -24,7 +24,7 @@ mpegts_h = custom_target('mpegtsenum_h',
+   output : 'gstmpegts-enumtypes.h',
+   input : mpegts_headers,
+   install : true,
+-  install_dir : 'include/gstreamer-1.0/gst/mpegts',
++  install_dir : get_option('includedir') + '/gstreamer-1.0/gst/mpegts',
+   command : [mkenums, glib_mkenums, '@OUTPUT@', '@INPUT@'])
+ gen_sources = [mpegts_h]
+ 
+diff --git a/gst-libs/gst/webrtc/meson.build b/gst-libs/gst/webrtc/meson.build
+index f138fa374..4913c35f1 100644
+--- a/gst-libs/gst/webrtc/meson.build
++++ b/gst-libs/gst/webrtc/meson.build
+@@ -30,7 +30,7 @@ gstwebrtc_h = custom_target('gstwebrtcenum_h',
+   output : 'webrtc-enumtypes.h',
+   input : webrtc_enumtypes_headers,
+   install : true,
+-  install_dir : 'include/gstreamer-1.0/gst/webrtc/',
++  install_dir : get_option('includedir') + '/gstreamer-1.0/gst/webrtc/',
+   command : [mkenums, glib_mkenums, '@OUTPUT@', '@INPUT@'])
+ 
+ gstwebrtc_c = custom_target('gstwebrtcenum_c',
