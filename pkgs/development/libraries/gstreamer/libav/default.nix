@@ -1,5 +1,5 @@
-{ stdenv, fetchurl, pkgconfig, python, yasm
-, gst-plugins-base, orc, bzip2
+{ stdenv, fetchurl, meson, ninja, pkgconfig
+, python, yasm, gst-plugins-base, orc, bzip2
 , withSystemLibav ? true, libav ? null
 }:
 
@@ -28,7 +28,7 @@ stdenv.mkDerivation rec {
     "--with-system-libav";
 
   nativeBuildInputs = with stdenv.lib;
-    [ pkgconfig python ]
+    [ meson ninja pkgconfig python ]
     ++ optional (!withSystemLibav) yasm
     ;
 
