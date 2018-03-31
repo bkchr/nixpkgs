@@ -1,6 +1,6 @@
-{ stdenv, fetchurl, pkgconfig, perl, bison, flex, python, gobjectIntrospection
-, glib, makeWrapper
-, darwin
+{ stdenv, fetchurl, meson, ninja, pkgconfig, gettext, bison, flex
+, python3, glib, makeWrapper, valgrind, libcap
+, gtk3, gsl, libunwind, darwin
 }:
 
 stdenv.mkDerivation rec {
@@ -19,26 +19,29 @@ stdenv.mkDerivation rec {
     sha256 = "0vj6k01lp2yva6rfd95fkyng9jdr62gkz0x8d2l81dyly1ki6dpw";
   };
 
+  patches = [ 
+    ./fix_install_dir.patch
+    ./fix_pkgconfig_includedir.patch
+  ];
+
   outputs = [ "out" "dev" ];
   outputBin = "dev";
 
   nativeBuildInputs = [
-    pkgconfig perl bison flex python gobjectIntrospection makeWrapper
+    meson ninja pkgconfig gettext bison flex python3 makeWrapper valgrind gtk3 gsl
   ];
-  buildInputs = stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.CoreServices;
+  buildInputs = [ libcap libunwind ] ++ stdenv.lib.optional stdenv.isDarwin darwin.apple_sdk.frameworks.CoreServices;
 
   propagatedBuildInputs = [ glib ];
-
-  enableParallelBuilding = true;
-
-  preConfigure = ''
-    configureFlagsArray+=("--exec-prefix=$dev")
-  '';
 
   postInstall = ''
     for prog in "$dev/bin/"*; do
         wrapProgram "$prog" --suffix GST_PLUGIN_SYSTEM_PATH : "\$(unset _tmp; for profile in \$NIX_PROFILES; do _tmp="\$profile/lib/gstreamer-1.0''$\{_tmp:+:\}\$_tmp"; done; printf "\$_tmp")"
     done
+  '';
+
+  preConfigure= ''
+    patchShebangs .
   '';
 
   preFixup = ''

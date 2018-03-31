@@ -1,0 +1,48 @@
+diff --git a/gst/meson.build b/gst/meson.build
+index 92250541d..a332a943a 100644
+--- a/gst/meson.build
++++ b/gst/meson.build
+@@ -182,7 +182,7 @@ gst_cdata.set('GST_DISABLE_PLUGIN_DEFINE', '#undef GST_DISABLE_PLUGIN')
+ 
+ configure_file(input : 'gstconfig.h.in',
+   output : 'gstconfig.h',
+-  install_dir : 'include/gstreamer-1.0/gst',
++  install_dir : join_paths(get_option('includedir'), 'gstreamer-1.0/gst'),
+   configuration : gst_cdata)
+ 
+ version_cdata = configuration_data()
+@@ -193,7 +193,7 @@ version_cdata.set('GST_VERSION_NANO', gst_version_nano)
+ 
+ gst_version_h = configure_file(input : 'gstversion.h.in',
+   output : 'gstversion.h',
+-  install_dir : 'include/gstreamer-1.0/gst',
++  install_dir : join_paths(get_option('includedir'), 'gstreamer-1.0/gst'),
+   configuration : version_cdata)
+ 
+ gst_enums = gnome.mkenums('gstenumtypes',
+diff --git a/libs/gst/check/meson.build b/libs/gst/check/meson.build
+index d6e8d217c..13109f8a5 100644
+--- a/libs/gst/check/meson.build
++++ b/libs/gst/check/meson.build
+@@ -34,7 +34,7 @@ subdir('libcheck')
+ configure_file(input : 'libcheck/check.h.in',
+   output : 'internal-check.h',
+   install : true,
+-  install_dir : 'include/gstreamer-1.0/gst/check/',
++  install_dir : join_paths(get_option('includedir'), 'gstreamer-1.0/gst/check'),
+   configuration : check_cdata)
+ 
+ gst_check = shared_library('gstcheck-@0@'.format(apiversion),
+diff --git a/libs/gst/controller/meson.build b/libs/gst/controller/meson.build
+index 1645c9e65..7e50bbbb3 100644
+--- a/libs/gst/controller/meson.build
++++ b/libs/gst/controller/meson.build
+@@ -31,7 +31,7 @@ gstcontroller_h = custom_target('gstcontrollerenum_h',
+   output : 'controller-enumtypes.h',
+   input : controller_mkenum_headers,
+   install : true,
+-  install_dir : 'include/gstreamer-1.0/gst/controller/',
++  install_dir : join_paths(get_option('includedir'), 'gstreamer-1.0/gst/controller'),
+   command : [mkenums, glib_mkenums, '@OUTPUT@', '@INPUT@'])
+ 
+ gstcontroller_c = custom_target('gstcontrollerenum_c',
