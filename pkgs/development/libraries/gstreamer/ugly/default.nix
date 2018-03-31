@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, pkgconfig, python
+{ stdenv, fetchurl, meson, ninja, pkgconfig, python
 , gst-plugins-base, orc
 , a52dec, libcdio, libdvdread
 , lame, libmad, libmpeg2, x264, libintlOrEmpty, mpg123
@@ -27,7 +27,7 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" ];
 
-  nativeBuildInputs = [ pkgconfig python ];
+  nativeBuildInputs = [ meson ninja pkgconfig python ];
 
   buildInputs = [
     gst-plugins-base orc
