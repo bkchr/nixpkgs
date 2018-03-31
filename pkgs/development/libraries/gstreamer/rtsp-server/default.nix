@@ -1,4 +1,4 @@
-{ stdenv, fetchurl, pkgconfig, gst-plugins-base }:
+{ stdenv, fetchurl, meson, ninja, pkgconfig, gst-plugins-base }:
 
 stdenv.mkDerivation rec {
   name = "gst-rtsp-server-1.14.0";
@@ -21,7 +21,7 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" ];
 
-  nativeBuildInputs = [ pkgconfig ];
+  nativeBuildInputs = [ meson ninja pkgconfig ];
 
   buildInputs = [ gst-plugins-base ];
 }
