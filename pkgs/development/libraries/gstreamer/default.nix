@@ -21,7 +21,11 @@ rec {
 
   # TODO: gnonlin is deprecated in gst-editing-services, better switch to nle
   # (Non Linear Engine).
-  gst-editing-services = callPackage ./ges { inherit gnonlin; };
+  gst-editing-services = callPackage ./ges {
+    inherit gnonlin;
+    inherit gst-plugins-good;
+    inherit gst-plugins-bad;
+  };
 
   gst-vaapi = callPackage ./vaapi {
     inherit gst-plugins-base gstreamer gst-plugins-bad;

@@ -1,5 +1,6 @@
-{ stdenv, fetchurl, pkgconfig, python, gobjectIntrospection
-, gnonlin, libxml2, flex, perl
+{ stdenv, fetchurl, meson, ninja, pkgconfig, python
+, gnonlin, libxml2, flex, perl, gst-plugins-good
+, gst-plugins-bad
 }:
 
 stdenv.mkDerivation rec {
@@ -19,7 +20,12 @@ stdenv.mkDerivation rec {
 
   outputs = [ "out" "dev" ];
 
-  nativeBuildInputs = [ pkgconfig python gobjectIntrospection flex perl ];
+  nativeBuildInputs = [ meson ninja pkgconfig python flex perl ];
 
-  propagatedBuildInputs = [ gnonlin libxml2 ];
+  propagatedBuildInputs = [ gnonlin libxml2 gst-plugins-good gst-plugins-bad ];
+
+  patches = [
+    ./fix_install_dir.patch
+    ./fix_pkgconfig_includedir.patch
+  ];
 }
