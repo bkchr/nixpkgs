@@ -1,5 +1,5 @@
-{ stdenv, fetchurl, pkgconfig, python, gstreamer, gobjectIntrospection
-, orc, alsaLib, libXv, pango, libtheora
+{ stdenv, fetchurl, pkgconfig, meson, ninja, python, gstreamer
+, orc, alsaLib, libXv, pango, libtheora, wayland
 , cdparanoia, libvisual, libintlOrEmpty
 }:
 
@@ -21,17 +21,21 @@ stdenv.mkDerivation rec {
   outputs = [ "out" "dev" ];
 
   nativeBuildInputs = [
-    pkgconfig python gobjectIntrospection
+    pkgconfig python meson ninja
   ];
 
   buildInputs = [
-    orc libXv pango libtheora cdparanoia
+    orc libXv pango libtheora cdparanoia wayland
   ]
   ++ libintlOrEmpty
   ++ stdenv.lib.optional stdenv.isLinux alsaLib
   ++ stdenv.lib.optional (!stdenv.isDarwin) libvisual;
 
   propagatedBuildInputs = [ gstreamer ];
+
+  preConfigure = ''
+    patchShebangs .
+  '';
 
   configureFlags = if stdenv.isDarwin then [
     # Does not currently build on Darwin
@@ -42,5 +46,8 @@ stdenv.mkDerivation rec {
 
   NIX_LDFLAGS = if stdenv.isDarwin then "-lintl" else null;
 
-  enableParallelBuilding = true;
+  patches = [
+    ./fix_install_dir.patch
+    ./fix_pkgconfig_includedir.patch
+  ];
 }

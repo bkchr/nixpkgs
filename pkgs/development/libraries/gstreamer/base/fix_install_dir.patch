@@ -1,0 +1,100 @@
+diff --git a/gst-libs/gst/app/meson.build b/gst-libs/gst/app/meson.build
+index fd1883b2c..15f9e3ac5 100644
+--- a/gst-libs/gst/app/meson.build
++++ b/gst-libs/gst/app/meson.build
+@@ -12,7 +12,7 @@ gstapp_h = custom_target('gstappenum_h',
+   output : 'app-enumtypes.h',
+   input : app_mkenum_headers,
+   install : true,
+-  install_dir : 'include/gstreamer-1.0/gst/app/',
++  install_dir : get_option('includedir') + '/gstreamer-1.0/gst/app',
+   command : [mkenums, glib_mkenums, '@OUTPUT@', '@INPUT@'])
+ 
+ gstapp_c = custom_target('gstappenum_c',
+diff --git a/gst-libs/gst/audio/meson.build b/gst-libs/gst/audio/meson.build
+index ace64fe34..df314cec6 100644
+--- a/gst-libs/gst/audio/meson.build
++++ b/gst-libs/gst/audio/meson.build
+@@ -65,7 +65,7 @@ gstaudio_h = custom_target('gstaudioenum_h',
+   output : 'audio-enumtypes.h',
+   input : audio_mkenum_headers,
+   install : true,
+-  install_dir : 'include/gstreamer-1.0/gst/audio/',
++  install_dir : get_option('includedir') + '/gstreamer-1.0/gst/audio',
+   command : [mkenums, glib_mkenums, '@OUTPUT@', '@INPUT@'])
+ 
+ gstaudio_c = custom_target('gstaudioenum_c',
+diff --git a/gst-libs/gst/pbutils/meson.build b/gst-libs/gst/pbutils/meson.build
+index b56593ef6..c9eccbd30 100644
+--- a/gst-libs/gst/pbutils/meson.build
++++ b/gst-libs/gst/pbutils/meson.build
+@@ -19,7 +19,7 @@ pbconf.set('PACKAGE_VERSION_MICRO', gst_version_micro)
+ pbconf.set('PACKAGE_VERSION_NANO', gst_version_nano)
+ gst_pbutils_version_h = configure_file(input : 'gstpluginsbaseversion.h.in',
+   output: 'gstpluginsbaseversion.h',
+-  install_dir : 'include/gstreamer-1.0/gst/pbutils/',
++  install_dir : get_option('includedir') + '/gstreamer-1.0/gst/pbutils',
+   configuration: pbconf)
+ 
+ pbutils_headers = [
+@@ -43,7 +43,7 @@ gstpbutils_h = custom_target('gstpbutilsenum_h',
+   output : 'pbutils-enumtypes.h',
+   input : pbutils_mkenum_headers,
+   install : true,
+-  install_dir : 'include/gstreamer-1.0/gst/pbutils/',
++  install_dir : get_option('includedir') + '/gstreamer-1.0/gst/pbutils',
+   command : [mkenums, glib_mkenums, '@OUTPUT@', '@INPUT@'])
+ 
+ gstpbutils_c = custom_target('gstpbutilsenum_c',
+diff --git a/gst-libs/gst/rtp/meson.build b/gst-libs/gst/rtp/meson.build
+index ab20bf768..69b3facc4 100644
+--- a/gst-libs/gst/rtp/meson.build
++++ b/gst-libs/gst/rtp/meson.build
+@@ -28,7 +28,7 @@ gstrtp_enum_h = custom_target('gstrtp_enum_h',
+   output : 'gstrtp-enumtypes.h',
+   input : rtp_headers,
+   install : true,
+-  install_dir : 'include/gstreamer-1.0/gst/rtp/',
++  install_dir : get_option('includedir') + '/gstreamer-1.0/gst/rtp',
+   command : [mkenums, glib_mkenums, '@OUTPUT@', '@INPUT@'])
+ 
+ gstrtp_enum_c = custom_target('gstrtp_enum_c',
+diff --git a/gst-libs/gst/rtsp/meson.build b/gst-libs/gst/rtsp/meson.build
+index 69ba21e58..fe887e519 100644
+--- a/gst-libs/gst/rtsp/meson.build
++++ b/gst-libs/gst/rtsp/meson.build
+@@ -28,7 +28,7 @@ gstrtsp_h = custom_target('gstrtspenum_h',
+   output : 'gstrtsp-enumtypes.h',
+   input : rtsp_headers,
+   install : true,
+-  install_dir : 'include/gstreamer-1.0/gst/rtsp/',
++  install_dir : get_option('includedir') + '/gstreamer-1.0/gst/rtsp',
+   command : [mkenums, glib_mkenums, '@OUTPUT@', '@INPUT@'])
+ 
+ gstrtsp_c = custom_target('gstrtspenum_c',
+diff --git a/gst-libs/gst/tag/meson.build b/gst-libs/gst/tag/meson.build
+index 53c928d5e..7e4a21c60 100644
+--- a/gst-libs/gst/tag/meson.build
++++ b/gst-libs/gst/tag/meson.build
+@@ -31,7 +31,7 @@ gsttag_h = custom_target('gsttagenum_h',
+   output : 'tag-enumtypes.h',
+   input : tag_mkenum_headers,
+   install : true,
+-  install_dir : 'include/gstreamer-1.0/gst/tag/',
++  install_dir : get_option('includedir') + '/gstreamer-1.0/gst/tag',
+   command : [mkenums, glib_mkenums, '@OUTPUT@', '@INPUT@'])
+ 
+ gsttag_c = custom_target('gsttagenum_c',
+diff --git a/gst-libs/gst/video/meson.build b/gst-libs/gst/video/meson.build
+index 0c44d9a87..8914046c6 100644
+--- a/gst-libs/gst/video/meson.build
++++ b/gst-libs/gst/video/meson.build
+@@ -89,7 +89,7 @@ gstvideo_h = custom_target('gstvideoenum_h',
+   output : 'video-enumtypes.h',
+   input : video_mkenum_headers,
+   install : true,
+-  install_dir : 'include/gstreamer-1.0/gst/video/',
++  install_dir : get_option('includedir') + '/gstreamer-1.0/gst/video',
+   command : [mkenums, glib_mkenums, '@OUTPUT@', '@INPUT@'])
+ 
+ gstvideo_c = custom_target('gstvideoenum_c',
