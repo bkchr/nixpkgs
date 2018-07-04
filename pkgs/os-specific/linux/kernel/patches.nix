@@ -59,4 +59,9 @@ rec {
     };
   };
 
+  bcm2835_audio = rec {
+    name = "bcm2835_audio";
+    patch = ./raspberry-pi-audio.patch;
+  };
+
 }

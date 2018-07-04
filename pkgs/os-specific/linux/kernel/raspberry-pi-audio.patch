@@ -1,0 +1,16 @@
+diff --git a/arch/arm/boot/dts/bcm2835-rpi.dtsi b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+index cb2d6d78a7fb..d55fa48c1a3a 100644
+--- a/arch/arm/boot/dts/bcm2835-rpi.dtsi
++++ b/arch/arm/boot/dts/bcm2835-rpi.dtsi
+@@ -35,6 +35,11 @@
+ 			reg = <0x7e00b840 0xf>;
+ 			interrupts = <0 2>;
+ 		};
++
++                audio: audio {
++                        compatible = "brcm,bcm2835-audio";
++                        brcm,pwm-channels = <8>;
++                };
+ 	};
+ };
+ 
