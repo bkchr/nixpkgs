@@ -9,23 +9,32 @@ stdenv.mkDerivation {
 
   installPhase = ''
     if [[ ! -f Cargo.lock ]]; then
-        echo
-        echo "ERROR: The Cargo.lock file doesn't exist"
-        echo
-        echo "Cargo.lock is needed to make sure that cargoSha256 doesn't change"
-        echo "when the registry is updated."
-        echo
+      echo
+      echo "ERROR: The Cargo.lock file doesn't exist"
+      echo
+      echo "Cargo.lock is needed to make sure that cargoSha256 doesn't change"
+      echo "when the registry is updated."
+      echo
 
-        exit 1
+      exit 1
     fi
 
     export CARGO_HOME=$(mktemp -d cargo-home.XXX)
 
     ${cargoUpdateHook}
 
-    cargo vendor
+    cargo vendor > config
+
+    LINENUMBER=$(grep -rne "\[source.vendored-sources\]" config | cut -d ':' -f 1)
+    sed -i -e "$LINENUMBER,+1d;" config
+
+    cat <<EOF >> config
+    [source.vendored-sources]
+    directory = "$out"
+    EOF
 
     cp -ar vendor $out
+    #cp config $out/config
   '';
 
   outputHashAlgo = "sha256";

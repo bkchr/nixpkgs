@@ -30,14 +30,19 @@ let
       }
     else null;
 
-  setupVendorDir = if cargoVendorDir == null
+  setupCargoConfig = if cargoVendorDir == null
     then ''
-      unpackFile "$cargoDeps"
-      cargoDepsCopy=$(stripHash $(basename $cargoDeps))
-      chmod -R +w "$cargoDepsCopy"
+      cp ${cargoDeps}/config .cargo/config
     ''
     else ''
-      cargoDepsCopy="$sourceRoot/${cargoVendorDir}"
+      cat >.cargo/config <<-EOF
+        [source.crates-io]
+        registry = 'https://github.com/rust-lang/crates.io-index'
+        replace-with = 'vendored-sources'
+
+        [source.vendored-sources]
+        directory = '$(pwd)/$sourceRoot/${cargoVendorDir}'
+      EOF
     '';
 
 in stdenv.mkDerivation (args // {
@@ -58,19 +63,8 @@ in stdenv.mkDerivation (args // {
   postUnpack = ''
     eval "$cargoDepsHook"
 
-    ${setupVendorDir}
-
     mkdir .cargo
-    cat >.cargo/config <<-EOF
-      [source.crates-io]
-      registry = 'https://github.com/rust-lang/crates.io-index'
-      replace-with = 'vendored-sources'
-
-      [source.vendored-sources]
-      directory = '$(pwd)/$cargoDepsCopy'
-    EOF
-
-    unset cargoDepsCopy
+    ${setupCargoConfig}
 
     export RUST_LOG=${logLevel}
   '' + (args.postUnpack or "");
