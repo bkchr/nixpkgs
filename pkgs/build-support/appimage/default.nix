@@ -172,6 +172,7 @@ rec {
       xorg.libXft
       libvdpau
       alsa-lib
+      openal
 
       harfbuzz
       e2fsprogs
